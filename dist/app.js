@@ -11,7 +11,7 @@ const morgan_1 = __importDefault(require("morgan"));
 const index_1 = __importDefault(require("./routes/index"));
 const service_1 = __importDefault(require("./routes/service"));
 const app = (0, express_1.default)();
-const port = 3000;
+const port = process.env.PORT || 5000;
 // view engine setup
 app.set('views', path_1.default.join(__dirname, 'views'));
 app.set('view engine', 'pug');
