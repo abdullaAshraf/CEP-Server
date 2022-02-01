@@ -8,4 +8,9 @@ router.post('/', (req, res, next) => {
   res.end(JSON.stringify(response));
 });
 
+router.put('/schedule', (req, res, next) => {
+  ClusterManager.updateClustersState();
+  res.end("done");
+});
+
 export default router;

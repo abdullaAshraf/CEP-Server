@@ -11,8 +11,12 @@ const morgan_1 = __importDefault(require("morgan"));
 const index_1 = __importDefault(require("./routes/index"));
 const service_1 = __importDefault(require("./routes/service"));
 const cluster_1 = __importDefault(require("./routes/cluster"));
+const scheduler_1 = __importDefault(require("./services/scheduler"));
+const clusterManager_1 = __importDefault(require("./services/clusterManager"));
 const app = (0, express_1.default)();
 const port = process.env.PORT || 5000;
+scheduler_1.default.initialize();
+clusterManager_1.default.initialize();
 // view engine setup
 app.set('views', path_1.default.join(__dirname, 'views'));
 app.set('view engine', 'pug');

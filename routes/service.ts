@@ -50,4 +50,9 @@ router.get('/', (req, res, next) => {
   }
 });
 
+router.put('/schedule', (req, res, next) => {
+  Scheduler.triggerProcessQueue();
+  res.end("done");
+});
+
 export default router;

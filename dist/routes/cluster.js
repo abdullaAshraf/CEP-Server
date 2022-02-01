@@ -11,4 +11,8 @@ router.post('/', (req, res, next) => {
     res.setHeader('Content-Type', 'application/json');
     res.end(JSON.stringify(response));
 });
+router.put('/schedule', (req, res, next) => {
+    clusterManager_1.default.updateClustersState();
+    res.end("done");
+});
 exports.default = router;

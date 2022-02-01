@@ -7,9 +7,14 @@ import logger from 'morgan';
 import indexRouter from './routes/index'
 import serviceRouter from './routes/service'
 import clusterRouter from './routes/cluster'
+import Scheduler from './services/scheduler';
+import ClusterManager from './services/clusterManager';
 
 const app = express();
 const port = process.env.PORT || 5000;
+
+Scheduler.initialize();
+ClusterManager.initialize();
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));

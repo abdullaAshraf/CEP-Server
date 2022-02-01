@@ -13,10 +13,7 @@ export default class Scheduler {
     static initialize() {
         this.cronJob = new CronJob(this.cronExpression, async () => {
             try {
-              // copy queue contents to an offline copy so it is not disturbed by incoming requests
-              const queueCopy = [...this.queue];
-              this.queue = [];
-              await this.processQueue(ClusterManager.getActiveClusters(), queueCopy);
+              this.triggerProcessQueue()
             } catch (e) {
               console.error(e);
             }
@@ -25,6 +22,17 @@ export default class Scheduler {
 
     static addToQueue(serviceRequest: ServiceRequest) {
         this.queue.push(serviceRequest);
+    }
+
+    static triggerProcessQueue() {
+        try {
+            // copy queue contents to an offline copy so it is not disturbed by incoming requests
+            const queueCopy = [...this.queue];
+            this.queue = [];
+            this.processQueue(ClusterManager.getActiveClusters(), queueCopy);
+          } catch (e) {
+            console.error(e);
+          }
     }
 
     private static async processQueue(clusters: Cluster[], requests: ServiceRequest[]): Promise<void> {

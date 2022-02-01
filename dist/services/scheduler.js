@@ -18,10 +18,7 @@ class Scheduler {
     static initialize() {
         this.cronJob = new cron_1.CronJob(this.cronExpression, () => __awaiter(this, void 0, void 0, function* () {
             try {
-                // copy queue contents to an offline copy so it is not disturbed by incoming requests
-                const queueCopy = [...this.queue];
-                this.queue = [];
-                yield this.processQueue(clusterManager_1.default.getActiveClusters(), queueCopy);
+                this.triggerProcessQueue();
             }
             catch (e) {
                 console.error(e);
@@ -30,6 +27,17 @@ class Scheduler {
     }
     static addToQueue(serviceRequest) {
         this.queue.push(serviceRequest);
+    }
+    static triggerProcessQueue() {
+        try {
+            // copy queue contents to an offline copy so it is not disturbed by incoming requests
+            const queueCopy = [...this.queue];
+            this.queue = [];
+            this.processQueue(clusterManager_1.default.getActiveClusters(), queueCopy);
+        }
+        catch (e) {
+            console.error(e);
+        }
     }
     static processQueue(clusters, requests) {
         return __awaiter(this, void 0, void 0, function* () {

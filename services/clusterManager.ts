@@ -40,7 +40,7 @@ export default class ClusterManager {
         return this.queue.find(cluster => cluster.uuid === uuid);
     }
 
-    private static async updateClustersState(): Promise<void> {
+    static async updateClustersState(): Promise<void> {
         this.queue.forEach(cluster => {
             if (minutesBetween(cluster.lastUpdate, new Date()) >= this.inactiveAfter) {
                 cluster.state = ClusterState.Inactive;

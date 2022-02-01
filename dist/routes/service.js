@@ -54,4 +54,8 @@ router.get('/', (req, res, next) => {
         res.end(JSON.stringify(cluster.getAssignments()));
     }
 });
+router.put('/schedule', (req, res, next) => {
+    scheduler_1.default.triggerProcessQueue();
+    res.end("done");
+});
 exports.default = router;
