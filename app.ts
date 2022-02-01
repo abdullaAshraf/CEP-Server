@@ -6,6 +6,7 @@ import logger from 'morgan';
 
 import indexRouter from './routes/index'
 import serviceRouter from './routes/service'
+import clusterRouter from './routes/cluster'
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -22,6 +23,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
 app.use('/service', serviceRouter);
+app.use('/cluster', clusterRouter);
 
 // catch 404 and forward to error handler
 app.use((req, res, next) => {

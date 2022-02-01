@@ -10,6 +10,7 @@ const cookie_parser_1 = __importDefault(require("cookie-parser"));
 const morgan_1 = __importDefault(require("morgan"));
 const index_1 = __importDefault(require("./routes/index"));
 const service_1 = __importDefault(require("./routes/service"));
+const cluster_1 = __importDefault(require("./routes/cluster"));
 const app = (0, express_1.default)();
 const port = process.env.PORT || 5000;
 // view engine setup
@@ -22,6 +23,7 @@ app.use((0, cookie_parser_1.default)());
 app.use(express_1.default.static(path_1.default.join(__dirname, 'public')));
 app.use('/', index_1.default);
 app.use('/service', service_1.default);
+app.use('/cluster', cluster_1.default);
 // catch 404 and forward to error handler
 app.use((req, res, next) => {
     next((0, http_errors_1.default)(404));
