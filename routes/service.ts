@@ -46,7 +46,10 @@ router.get('/', (req, res, next) => {
     res.end(JSON.stringify('No cluster was found with this uuid, use register endpoint to get a valid uuid'));
   } else {
     cluster.updateBenchmarks(req.body.benchmarks);
-    res.end(JSON.stringify(cluster.getAssignments()));
+    const response = {
+      services: cluster.getAssignments()
+    }
+    res.end(JSON.stringify(response));
   }
 });
 
