@@ -9,6 +9,7 @@ import serviceRouter from './routes/service'
 import clusterRouter from './routes/cluster'
 import Scheduler from './services/scheduler';
 import ClusterManager from './services/clusterManager';
+import mongoose from 'mongoose';
 
 var winston = require('winston'), expressWinston = require('express-winston');
 
@@ -66,3 +67,5 @@ app.use((err: { message: any; status: any; }, req: { app: { get: (arg0: string) 
 app.listen(port, () => {
   return console.log(`Express is listening at http://localhost:${port}`);
 });
+
+//mongoose.connect("mongodb://localhost:27017/acmedb")

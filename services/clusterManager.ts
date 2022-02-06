@@ -2,6 +2,7 @@ import Cluster, { ClusterState } from "../models/Cluster";
 import Scheduler from './scheduler';
 import { CronJob } from 'cron';
 import cluster from "cluster";
+import Utils from "../utilities/dateUtils";
 
 export default class ClusterManager {
     // give cluster checkups time before updating inactive and busy clusters
@@ -42,11 +43,11 @@ export default class ClusterManager {
 
     static async updateClustersState(): Promise<void> {
         this.queue.forEach(cluster => {
-            if (minutesBetween(cluster.lastUpdate, new Date()) >= this.inactiveAfter) {
+            if (Utils.minutesBetween(cluster.lastUpdate, new Date()) >= this.inactiveAfter) {
                 cluster.state = ClusterState.Inactive;
                 const requests = cluster.revokeAssignments();
                 requests.forEach(request => Scheduler.addToQueue(request));
-            } else if (minutesBetween(cluster.lastUpdate, new Date()) >= this.busyAfter) {
+            } else if (Utils.minutesBetween(cluster.lastUpdate, new Date()) >= this.busyAfter) {
                 cluster.state = ClusterState.Busy;
             } else {
                 cluster.state = ClusterState.Active;
