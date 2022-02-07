@@ -3,6 +3,7 @@ import { CronJob } from 'cron';
 import Cluster from "../models/Cluster";
 import ClusterManager from "./clusterManager";
 import Device from "../models/Device";
+import util from "util";
 
 export default class Scheduler {
     private static cronExpression = '0 0/5 * * * *';
@@ -37,11 +38,12 @@ export default class Scheduler {
 
     private static async processQueue(clusters: Cluster[], requests: ServiceRequest[]): Promise<void> {
         requests.forEach(request => {
-            console.log(request);
+            console.log(util.inspect(request, {showHidden: false, depth: null, colors: true}))
             let mxScore = 0;
             let mxDevice: Device | undefined;
             clusters.forEach(cluster => {
                 const result = cluster.getHighestScore();
+                console.log("highest score: ", result.score, " cluster: ", cluster.uuid);
                 if (result.score > mxScore) {
                     mxScore = result.score;
                     mxDevice = result.device;
@@ -49,8 +51,10 @@ export default class Scheduler {
             });
 
             if (mxDevice && mxScore > 0){
+                console.log("assigned to device ", mxDevice.id);
                 mxDevice.assign(request);
             } else {
+                console.log("readded to qqueue")
                 //if no device is free at the moment add the request back to the queue for next iteration
                 Scheduler.addToQueue(request);
             }
