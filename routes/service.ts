@@ -15,7 +15,10 @@ router.post('/', (req, res, next) => {
     const request = new ServiceRequest(req.body.name, req.body.command, device, cluster);
     Scheduler.addToQueue(request);
     res.setHeader('Content-Type', 'application/json');
-    res.end(JSON.stringify(request.uuid));
+    const response = {
+      uuid: request.uuid
+    }
+    res.end(JSON.stringify(response));
   }
 });
 

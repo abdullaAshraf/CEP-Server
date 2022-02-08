@@ -54,7 +54,7 @@ export default class Scheduler {
                 console.log("assigned to device ", mxDevice.id);
                 mxDevice.assign(request);
             } else {
-                console.log("readded to qqueue")
+                console.log("readded to queue")
                 //if no device is free at the moment add the request back to the queue for next iteration
                 Scheduler.addToQueue(request);
             }
