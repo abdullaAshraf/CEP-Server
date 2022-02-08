@@ -36,6 +36,10 @@ export default class Scheduler {
           }
     }
 
+    static clearQueue() {
+        this.queue = [];
+    }
+
     private static async processQueue(clusters: Cluster[], requests: ServiceRequest[]): Promise<void> {
         requests.forEach(request => {
             console.log(util.inspect(request, {showHidden: false, depth: null, colors: true}))

@@ -61,4 +61,10 @@ router.put('/schedule', (req, res, next) => {
   res.end("done");
 });
 
+router.put('/clear', (req, res, next) => {
+  ClusterManager.revokeAllAssingedServices();
+  Scheduler.clearQueue();
+  res.end("done");
+});
+
 export default router;

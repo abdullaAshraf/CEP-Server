@@ -1,7 +1,6 @@
 import Cluster, { ClusterState } from "../models/Cluster";
 import Scheduler from './scheduler';
 import { CronJob } from 'cron';
-import cluster from "cluster";
 import Utils from "../utilities/dateUtils";
 
 export default class ClusterManager {
@@ -11,7 +10,7 @@ export default class ClusterManager {
     private static busyAfter = 5;
     private static inactiveAfter = 20;
 
-    private static queue: Cluster[] = [];
+    private static clusters: Cluster[] = [];
     private static cronJob: CronJob;
 
     static initialize() {
@@ -26,7 +25,7 @@ export default class ClusterManager {
 
     static register() {
         const cluster = new Cluster();
-        this.queue.push(cluster);
+        this.clusters.push(cluster);
         return {
             uuid: cluster.uuid,
             cycle: this.cronClusterCycle
@@ -34,15 +33,19 @@ export default class ClusterManager {
     }
 
     static getActiveClusters():  Cluster[] {
-        return this.queue.filter(cluster => cluster.state === ClusterState.Active);
+        return this.clusters.filter(cluster => cluster.state === ClusterState.Active);
     }
 
     static getCluster(uuid: string) {
-        return this.queue.find(cluster => cluster.uuid === uuid);
+        return this.clusters.find(cluster => cluster.uuid === uuid);
+    }
+
+    static revokeAllAssingedServices() {
+        this.clusters.forEach(cluster => cluster.revokeAssignments());
     }
 
     static async updateClustersState(): Promise<void> {
-        this.queue.forEach(cluster => {
+        this.clusters.forEach(cluster => {
             if (Utils.minutesBetween(cluster.lastUpdate, new Date()) >= this.inactiveAfter) {
                 cluster.state = ClusterState.Inactive;
                 const requests = cluster.revokeAssignments();
