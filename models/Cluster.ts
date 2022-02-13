@@ -1,5 +1,3 @@
-import { throws } from 'assert';
-import cluster from 'cluster';
 import {v4 as uuidv4} from 'uuid';
 import Device from './Device';
 import ServiceRequest from './ServiceRequest';

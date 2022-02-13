@@ -20,7 +20,10 @@ router.post('/', (req, res, next) => {
         const request = new ServiceRequest_1.default(req.body.name, req.body.command, device, cluster);
         scheduler_1.default.addToQueue(request);
         res.setHeader('Content-Type', 'application/json');
-        res.end(JSON.stringify(request.uuid));
+        const response = {
+            uuid: request.uuid
+        };
+        res.end(JSON.stringify(response));
     }
 });
 router.put('/finished', (req, res, next) => {
@@ -51,11 +54,19 @@ router.get('/', (req, res, next) => {
     }
     else {
         cluster.updateBenchmarks(req.body.benchmarks);
-        res.end(JSON.stringify(cluster.getAssignments()));
+        const response = {
+            services: cluster.getAssignments()
+        };
+        res.end(JSON.stringify(response));
     }
 });
 router.put('/schedule', (req, res, next) => {
     scheduler_1.default.triggerProcessQueue();
+    res.end("done");
+});
+router.delete('/clear', (req, res, next) => {
+    clusterManager_1.default.revokeAllAssingedServices();
+    scheduler_1.default.clearQueue();
     res.end("done");
 });
 exports.default = router;

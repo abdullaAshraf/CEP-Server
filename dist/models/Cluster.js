@@ -46,14 +46,14 @@ class Cluster {
         this.lastUpdate = new Date();
         const assignments = [];
         this.devices.forEach(device => {
-            assignments.push([...device.assigned.map(request => {
-                    return {
-                        device: device.id,
-                        uuid: request.uuid,
-                        name: request.name,
-                        command: request.command
-                    };
-                })]);
+            device.assigned.forEach(request => {
+                assignments.push({
+                    device: device.id,
+                    uuid: request.uuid,
+                    name: request.name,
+                    command: request.command
+                });
+            });
         });
         return assignments;
     }

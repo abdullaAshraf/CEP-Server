@@ -7,6 +7,7 @@ import logger from 'morgan';
 import indexRouter from './routes/index'
 import serviceRouter from './routes/service'
 import clusterRouter from './routes/cluster'
+import userRouter from './routes/auth'
 import Scheduler from './services/scheduler';
 import ClusterManager from './services/clusterManager';
 import mongoose from 'mongoose';
@@ -15,6 +16,10 @@ var winston = require('winston'), expressWinston = require('express-winston');
 
 const app = express();
 const port = process.env.PORT || 5000;
+
+require('dotenv').config()
+
+mongoose.connect(`mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.alarc.mongodb.net/OffloadingService?retryWrites=true&w=majority`,() => console.log('connected to db!'));
 
 Scheduler.initialize();
 ClusterManager.initialize();
@@ -47,6 +52,7 @@ app.use(expressWinston.logger({
 app.use('/', indexRouter);
 app.use('/service', serviceRouter);
 app.use('/cluster', clusterRouter);
+app.use('/user', userRouter);
 
 // catch 404 and forward to error handler
 app.use((req, res, next) => {

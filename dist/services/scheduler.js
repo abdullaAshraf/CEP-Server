@@ -14,6 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const cron_1 = require("cron");
 const clusterManager_1 = __importDefault(require("./clusterManager"));
+const util_1 = __importDefault(require("util"));
 class Scheduler {
     static initialize() {
         this.cronJob = new cron_1.CronJob(this.cronExpression, () => __awaiter(this, void 0, void 0, function* () {
@@ -39,23 +40,29 @@ class Scheduler {
             console.error(e);
         }
     }
+    static clearQueue() {
+        this.queue = [];
+    }
     static processQueue(clusters, requests) {
         return __awaiter(this, void 0, void 0, function* () {
             requests.forEach(request => {
-                console.log(request);
+                console.log(util_1.default.inspect(request, { showHidden: false, depth: null, colors: true }));
                 let mxScore = 0;
                 let mxDevice;
                 clusters.forEach(cluster => {
                     const result = cluster.getHighestScore();
+                    console.log("highest score: ", result.score, " cluster: ", cluster.uuid);
                     if (result.score > mxScore) {
                         mxScore = result.score;
                         mxDevice = result.device;
                     }
                 });
                 if (mxDevice && mxScore > 0) {
+                    console.log("assigned to device ", mxDevice.id);
                     mxDevice.assign(request);
                 }
                 else {
+                    console.log("readded to queue");
                     //if no device is free at the moment add the request back to the queue for next iteration
                     Scheduler.addToQueue(request);
                 }

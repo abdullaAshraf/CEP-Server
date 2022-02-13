@@ -34,6 +34,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const Cluster_1 = __importStar(require("../models/Cluster"));
 const scheduler_1 = __importDefault(require("./scheduler"));
 const cron_1 = require("cron");
+const dateUtils_1 = __importDefault(require("../utilities/dateUtils"));
 class ClusterManager {
     static initialize() {
         this.cronJob = new cron_1.CronJob(this.cronUpdateActivty, () => __awaiter(this, void 0, void 0, function* () {
@@ -47,27 +48,30 @@ class ClusterManager {
     }
     static register() {
         const cluster = new Cluster_1.default();
-        this.queue.push(cluster);
+        this.clusters.push(cluster);
         return {
             uuid: cluster.uuid,
             cycle: this.cronClusterCycle
         };
     }
     static getActiveClusters() {
-        return this.queue.filter(cluster => cluster.state === Cluster_1.ClusterState.Active);
+        return this.clusters.filter(cluster => cluster.state === Cluster_1.ClusterState.Active);
     }
     static getCluster(uuid) {
-        return this.queue.find(cluster => cluster.uuid === uuid);
+        return this.clusters.find(cluster => cluster.uuid === uuid);
+    }
+    static revokeAllAssingedServices() {
+        this.clusters.forEach(cluster => cluster.revokeAssignments());
     }
     static updateClustersState() {
         return __awaiter(this, void 0, void 0, function* () {
-            this.queue.forEach(cluster => {
-                if (minutesBetween(cluster.lastUpdate, new Date()) >= this.inactiveAfter) {
+            this.clusters.forEach(cluster => {
+                if (dateUtils_1.default.minutesBetween(cluster.lastUpdate, new Date()) >= this.inactiveAfter) {
                     cluster.state = Cluster_1.ClusterState.Inactive;
                     const requests = cluster.revokeAssignments();
                     requests.forEach(request => scheduler_1.default.addToQueue(request));
                 }
-                else if (minutesBetween(cluster.lastUpdate, new Date()) >= this.busyAfter) {
+                else if (dateUtils_1.default.minutesBetween(cluster.lastUpdate, new Date()) >= this.busyAfter) {
                     cluster.state = Cluster_1.ClusterState.Busy;
                 }
                 else {
@@ -83,4 +87,4 @@ ClusterManager.cronClusterCycle = '0 1/5 * * * *';
 ClusterManager.cronUpdateActivty = '0 2/5 * * * *';
 ClusterManager.busyAfter = 5;
 ClusterManager.inactiveAfter = 20;
-ClusterManager.queue = [];
+ClusterManager.clusters = [];
