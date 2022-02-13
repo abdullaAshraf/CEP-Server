@@ -19,7 +19,7 @@ const port = process.env.PORT || 5000;
 
 require('dotenv').config()
 
-mongoose.connect(`mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.alarc.mongodb.net/OffloadingService?retryWrites=true&w=majority`,() => console.log('connected to db!'));
+mongoose.connect(`mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.alarc.mongodb.net/OffloadingService?retryWrites=true&w=majority`,() => console.log('connected to db!!'));
 
 Scheduler.initialize();
 ClusterManager.initialize();
