@@ -11,6 +11,7 @@ import userRouter from './routes/auth'
 import Scheduler from './services/scheduler';
 import ClusterManager from './services/clusterManager';
 import mongoose from 'mongoose';
+import DataManager from './services/dataManager';
 
 var winston = require('winston'), expressWinston = require('express-winston');
 
@@ -23,6 +24,7 @@ mongoose.connect(`mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD
 
 Scheduler.initialize();
 ClusterManager.initialize();
+DataManager.initialize();
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));

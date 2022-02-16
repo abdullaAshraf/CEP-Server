@@ -15,13 +15,15 @@ const auth_1 = __importDefault(require("./routes/auth"));
 const scheduler_1 = __importDefault(require("./services/scheduler"));
 const clusterManager_1 = __importDefault(require("./services/clusterManager"));
 const mongoose_1 = __importDefault(require("mongoose"));
+const dataManager_1 = __importDefault(require("./services/dataManager"));
 var winston = require('winston'), expressWinston = require('express-winston');
 const app = (0, express_1.default)();
 const port = process.env.PORT || 5000;
 require('dotenv').config();
-mongoose_1.default.connect(`mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.alarc.mongodb.net/OffloadingService?retryWrites=true&w=majority`, () => console.log('connected to db!'));
+mongoose_1.default.connect(`mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.alarc.mongodb.net/OffloadingService?retryWrites=true&w=majority`, () => console.log('connected to db!!'));
 scheduler_1.default.initialize();
 clusterManager_1.default.initialize();
+dataManager_1.default.initialize();
 // view engine setup
 app.set('views', path_1.default.join(__dirname, 'views'));
 app.set('view engine', 'pug');
