@@ -1,23 +1,4 @@
 "use strict";
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -31,13 +12,16 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const Cluster_1 = __importStar(require("../models/Cluster"));
-const scheduler_1 = __importDefault(require("./scheduler"));
+const Cluster_1 = require("../models/Cluster");
 const cron_1 = require("cron");
 const dateUtils_1 = __importDefault(require("../utilities/dateUtils"));
+const Cluster_2 = __importDefault(require("../schema/Cluster"));
+const uuid_1 = require("uuid");
+const mapper_1 = __importDefault(require("./mapper"));
+const Service_1 = require("../schema/Service");
 class ClusterManager {
     static initialize() {
-        this.cronJob = new cron_1.CronJob(this.cronUpdateActivty, () => __awaiter(this, void 0, void 0, function* () {
+        this.cronJob = new cron_1.CronJob(this.cronUpdateActivity, () => __awaiter(this, void 0, void 0, function* () {
             try {
                 yield this.updateClustersState();
             }
@@ -46,36 +30,87 @@ class ClusterManager {
             }
         }));
     }
-    static register() {
-        const cluster = new Cluster_1.default();
-        this.clusters.push(cluster);
-        return {
-            uuid: cluster.uuid,
-            cycle: this.cronClusterCycle
-        };
+    static register(userId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const cluster = new Cluster_2.default({
+                uuid: (0, uuid_1.v4)(),
+                owner: userId,
+                state: Cluster_1.ClusterState[Cluster_1.ClusterState.Active],
+                devices: []
+            });
+            const savedCluster = yield cluster.save();
+            return {
+                uuid: cluster.uuid,
+                benchmarkCycle: this.cronBenchmarkCycle,
+                assignmentCycle: this.cronAssignmentCycle
+            };
+        });
+    }
+    static getAllClusters() {
+        return __awaiter(this, void 0, void 0, function* () {
+            const clusters = yield Cluster_2.default.find().populate('owner').populate({
+                path: 'devices',
+                populate: {
+                    path: 'services'
+                }
+            });
+            return clusters.map(cluster => mapper_1.default.toCluster(cluster));
+        });
     }
     static getActiveClusters() {
-        return this.clusters.filter(cluster => cluster.state === Cluster_1.ClusterState.Active);
+        return __awaiter(this, void 0, void 0, function* () {
+            const clusters = yield ClusterManager.getAllClusters();
+            return clusters.filter(cluster => cluster.state === Cluster_1.ClusterState.Active);
+        });
     }
     static getCluster(uuid) {
-        return this.clusters.find(cluster => cluster.uuid === uuid);
+        return __awaiter(this, void 0, void 0, function* () {
+            const cluster = yield Cluster_2.default.findOne({ uuid: uuid }).populate('owner').populate({
+                path: 'devices',
+                populate: {
+                    path: 'services'
+                }
+            });
+            return mapper_1.default.toCluster(cluster);
+        });
     }
-    static revokeAllAssingedServices() {
-        this.clusters.forEach(cluster => cluster.revokeAssignments());
+    static revokeAllAssignedServices() {
+        return __awaiter(this, void 0, void 0, function* () {
+            const clusters = yield ClusterManager.getAllClusters();
+            clusters.forEach(cluster => {
+                cluster.revokeAssignments();
+                cluster.save();
+            });
+        });
     }
     static updateClustersState() {
         return __awaiter(this, void 0, void 0, function* () {
-            this.clusters.forEach(cluster => {
-                if (dateUtils_1.default.minutesBetween(cluster.lastUpdate, new Date()) >= this.inactiveAfter) {
+            const clusters = yield ClusterManager.getAllClusters();
+            clusters.forEach(cluster => {
+                const minsDiff = dateUtils_1.default.minutesBetween(cluster.lastUpdate, new Date());
+                if (minsDiff >= this.deleteAfter) {
+                    cluster.delete();
+                    const index = clusters.indexOf(cluster);
+                    if (index > -1) {
+                        clusters.splice(index, 1);
+                    }
+                }
+                else if (minsDiff >= this.inactiveAfter) {
                     cluster.state = Cluster_1.ClusterState.Inactive;
                     const requests = cluster.revokeAssignments();
-                    requests.forEach(request => scheduler_1.default.addToQueue(request));
+                    requests.forEach(request => {
+                        request.state = Service_1.ServiceState[Service_1.ServiceState.Queue];
+                        request.save();
+                    });
+                    cluster.save(false);
                 }
-                else if (dateUtils_1.default.minutesBetween(cluster.lastUpdate, new Date()) >= this.busyAfter) {
+                else if (minsDiff >= this.busyAfter) {
                     cluster.state = Cluster_1.ClusterState.Busy;
+                    cluster.save(false);
                 }
                 else {
                     cluster.state = Cluster_1.ClusterState.Active;
+                    cluster.save(false);
                 }
             });
         });
@@ -83,8 +118,9 @@ class ClusterManager {
 }
 exports.default = ClusterManager;
 // give cluster checkups time before updating inactive and busy clusters
-ClusterManager.cronClusterCycle = '0 1/5 * * * *';
-ClusterManager.cronUpdateActivty = '0 2/5 * * * *';
-ClusterManager.busyAfter = 5;
-ClusterManager.inactiveAfter = 20;
-ClusterManager.clusters = [];
+ClusterManager.cronBenchmarkCycle = '0 3/5 * * * *';
+ClusterManager.cronAssignmentCycle = '0 1/5 * * * *';
+ClusterManager.cronUpdateActivity = '0 2/5 * * * *';
+ClusterManager.busyAfter = 5; // 5 mins
+ClusterManager.inactiveAfter = 20; // 20 mins
+ClusterManager.deleteAfter = 1440; // 1 day

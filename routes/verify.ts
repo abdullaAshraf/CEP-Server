@@ -4,7 +4,7 @@ import User from '../schema/User';
 export function token(req: any, res: any, next: any) {
     const token = req.header('auth-token');
     if (!token) {
-        return res.status(401).send('Acess Denied');
+        return res.status(401).send('Access Denied');
     }
 
     if (!process.env.SECRET) {
@@ -23,7 +23,7 @@ export function token(req: any, res: any, next: any) {
 export async function key(req: any, res: any, next: any) {
     const key = req.header('auth-key');
     if (!key) {
-        return res.status(401).send('Acess Denied');
+        return res.status(401).send('Access Denied');
     }
 
     const user = await User.findOne({key: key});

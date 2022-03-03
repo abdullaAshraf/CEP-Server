@@ -1,4 +1,23 @@
 "use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -14,7 +33,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const cron_1 = require("cron");
 const clusterManager_1 = __importDefault(require("./clusterManager"));
-const util_1 = __importDefault(require("util"));
+const Service_1 = __importStar(require("../schema/Service"));
+const uuid_1 = require("uuid");
+const Utils_1 = __importDefault(require("../utilities/Utils"));
 class Scheduler {
     static initialize() {
         this.cronJob = new cron_1.CronJob(this.cronExpression, () => __awaiter(this, void 0, void 0, function* () {
@@ -26,30 +47,52 @@ class Scheduler {
             }
         }));
     }
-    static addToQueue(serviceRequest) {
-        this.queue.push(serviceRequest);
+    static addToQueue(name, command, requester) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const service = new Service_1.default({
+                uuid: (0, uuid_1.v4)(),
+                name: name,
+                command: command,
+                requester: requester._id
+            });
+            yield service.save();
+            return service.uuid;
+        });
     }
     static triggerProcessQueue() {
-        try {
-            // copy queue contents to an offline copy so it is not disturbed by incoming requests
-            const queueCopy = [...this.queue];
-            this.queue = [];
-            this.processQueue(clusterManager_1.default.getActiveClusters(), queueCopy);
-        }
-        catch (e) {
-            console.error(e);
-        }
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const queue = yield Service_1.default.find({ state: Service_1.ServiceState[Service_1.ServiceState.Queue] }).populate({
+                    path: 'requester',
+                    populate: {
+                        path: 'cluster',
+                        populate: {
+                            path: 'owner',
+                        }
+                    }
+                });
+                const clusters = yield clusterManager_1.default.getActiveClusters();
+                this.processQueue(clusters, queue);
+            }
+            catch (e) {
+                console.error(e);
+            }
+        });
     }
     static clearQueue() {
-        this.queue = [];
+        return __awaiter(this, void 0, void 0, function* () {
+            yield Service_1.default.remove();
+        });
     }
     static processQueue(clusters, requests) {
         return __awaiter(this, void 0, void 0, function* () {
+            //console.log('requests', util.inspect(requests, {showHidden: false, depth: null, colors: true}));
+            //console.log('clusters', util.inspect(clusters, {showHidden: false, depth: null, colors: true}));
             requests.forEach(request => {
-                console.log(util_1.default.inspect(request, { showHidden: false, depth: null, colors: true }));
+                const validCommunities = request.requester.cluster.owner.communities;
                 let mxScore = 0;
                 let mxDevice;
-                clusters.forEach(cluster => {
+                clusters.filter(cluster => Utils_1.default.arrayIntersect(cluster.owner.communities, validCommunities)).forEach(cluster => {
                     const result = cluster.getHighestScore();
                     console.log("highest score: ", result.score, " cluster: ", cluster.uuid);
                     if (result.score > mxScore) {
@@ -62,9 +105,7 @@ class Scheduler {
                     mxDevice.assign(request);
                 }
                 else {
-                    console.log("readded to queue");
-                    //if no device is free at the moment add the request back to the queue for next iteration
-                    Scheduler.addToQueue(request);
+                    console.log("keep in queue");
                 }
             });
         });
@@ -72,4 +113,3 @@ class Scheduler {
 }
 exports.default = Scheduler;
 Scheduler.cronExpression = '0 0/5 * * * *';
-Scheduler.queue = [];

@@ -1,5 +1,15 @@
 import mongoose from 'mongoose';
 
+export interface IUser extends mongoose.Document  {
+    _id: string
+    name: string;
+    email: string;
+    password: string;
+    date: Date;
+    key: string;
+    communities: string[];
+}
+
 const userSchema = new mongoose.Schema({
     name: {
         type: String,
@@ -25,7 +35,11 @@ const userSchema = new mongoose.Schema({
     },
     key: {
         type: String
-    }
+    },
+    communities: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Community',
+    }]
 });
 
 export default mongoose.model('User', userSchema);

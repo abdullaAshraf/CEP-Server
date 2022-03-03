@@ -20,5 +20,14 @@ export default class ValidationService {
     
         return schema.validate(data).error;
     }
+
+    static communityValidation(data: any): ValidationError | undefined {
+        const schema = Joi.object().keys({
+            name: Joi.string().min(3).max(255).required(),
+            description: Joi.string().max(1024)
+        });
+    
+        return schema.validate(data).error;
+    }
 }
 

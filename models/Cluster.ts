@@ -1,17 +1,23 @@
-import {v4 as uuidv4} from 'uuid';
 import Device from './Device';
-import ServiceRequest from './ServiceRequest';
+import DeviceSchema from '../schema/Device'
+import ClusterSchema from '../schema/Cluster'
+import { IService } from '../schema/Service';
+import { IUser } from '../schema/User';
 
 export default class Cluster {
+    _id: string | undefined;
     uuid: string;
     state: ClusterState = ClusterState.Inactive;
     devices: Device[] = [];
     lastUpdate: Date;
+    owner: IUser;
 
-    constructor() {
-        this.uuid = uuidv4();
-        this.state = ClusterState.Active;
-        this.lastUpdate = new Date();
+    constructor(uuid: string, state: ClusterState, devices: Device[], lastUpdate: Date, owner: IUser) {
+        this.uuid = uuid;
+        this.state = state;
+        this.devices = devices;
+        this.lastUpdate = lastUpdate;
+        this.owner = owner;
     }
 
     getHighestScore() {
@@ -61,13 +67,47 @@ export default class Cluster {
         return assignments;
     }
 
-    revokeAssignments(): ServiceRequest[] {
-        let assignments: ServiceRequest[] = [];
+    revokeAssignments(): IService[] {
+        let assignments: IService[] = [];
         this.devices.forEach(device => {
             assignments = assignments.concat(device.assigned);
             device.assigned = [];
         });
         return assignments;
+    }
+
+    async save(saveDevice: boolean = true) {
+        let promises: Promise<any>[] = []; 
+        if (saveDevice) {
+            promises = this.devices.map( async device => {
+                if (device._id) {
+                    await DeviceSchema.updateOne({_id: device._id}, {
+                        benchmarks: device.benchmarks,
+                        services: device.assigned.map(service => service._id)
+                    });
+                } else {
+                    const schema = new DeviceSchema({
+                        id: device.id,
+                        cluster: this._id,
+                        benchmarks: device.benchmarks,
+                        services: []
+                    });
+                    const savedDevice = await schema.save();
+                    device._id = savedDevice._id;
+                }
+            });
+        }
+        await Promise.all(promises);
+        await ClusterSchema.updateOne({_id: this._id}, {
+            state: ClusterState[this.state],
+            lastUpdate: Date.now(),
+            devices: this.devices.map(device => device._id)
+        });
+    }
+
+    async delete() {
+        await DeviceSchema.deleteMany({_id: [this.devices.map(device => device._id)]});
+        await ClusterSchema.deleteOne({_id: this._id});
     }
 }
 

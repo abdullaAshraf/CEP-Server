@@ -8,6 +8,7 @@ import {v4 as uuidv4} from 'uuid';
 
 const router = express.Router();
 
+// Register new user
 router.get('/register', async (req, res, next) => {
     const error = ValidationService.userRegisterValidation(req.body);
     if (error) {
@@ -40,6 +41,7 @@ router.get('/register', async (req, res, next) => {
     }
 });
 
+// Login user using username and password
 router.get('/login', async (req, res, next) => {
     const error = ValidationService.userLoginValidation(req.body);
     if (error) {
@@ -67,6 +69,7 @@ router.get('/login', async (req, res, next) => {
     res.header('auth-token', token).send(token);
 });
 
+// Get API Key
 router.get('/key', token, async (req: any, res, next) => {
     console.log(req.user);
     const user = await User.findById(req.user);

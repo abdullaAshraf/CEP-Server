@@ -18,7 +18,7 @@ const User_1 = __importDefault(require("../schema/User"));
 function token(req, res, next) {
     const token = req.header('auth-token');
     if (!token) {
-        return res.status(401).send('Acess Denied');
+        return res.status(401).send('Access Denied');
     }
     if (!process.env.SECRET) {
         return res.status(500).send('Missing token secret');
@@ -37,7 +37,7 @@ function key(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         const key = req.header('auth-key');
         if (!key) {
-            return res.status(401).send('Acess Denied');
+            return res.status(401).send('Access Denied');
         }
         const user = yield User_1.default.findOne({ key: key });
         if (!user) {

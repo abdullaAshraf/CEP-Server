@@ -1,14 +1,15 @@
-import ServiceRequest from "../models/ServiceRequest";
 import { CronJob } from 'cron';
 import Cluster from "../models/Cluster";
 import ClusterManager from "./clusterManager";
 import Device from "../models/Device";
 import util from "util";
+import Service, { IService, ServiceState } from '../schema/Service';
+import {v4 as uuidv4} from 'uuid';
+import Utils from '../utilities/Utils';
 
 export default class Scheduler {
     private static cronExpression = '0 0/5 * * * *';
 
-    private static queue: ServiceRequest[] = []; 
     private static cronJob: CronJob;
 
     static initialize() {
@@ -21,31 +22,48 @@ export default class Scheduler {
           });
     }
 
-    static addToQueue(serviceRequest: ServiceRequest) {
-        this.queue.push(serviceRequest);
+    static async addToQueue(name: string, command: string[], requester: Device) {
+        const service = new Service({
+            uuid: uuidv4(),
+            name: name,
+            command: command,
+            requester:requester._id
+          });
+          await service.save();
+          return service.uuid;
     }
 
-    static triggerProcessQueue() {
+    static async triggerProcessQueue() {
         try {
-            // copy queue contents to an offline copy so it is not disturbed by incoming requests
-            const queueCopy = [...this.queue];
-            this.queue = [];
-            this.processQueue(ClusterManager.getActiveClusters(), queueCopy);
+            const queue = await Service.find({state: ServiceState[ServiceState.Queue]}).populate({
+                path : 'requester',
+                populate : {
+                  path : 'cluster',
+                  populate: {
+                    path : 'owner',
+                  }
+                }
+              });
+            const clusters = await ClusterManager.getActiveClusters();
+            this.processQueue(clusters, queue);
           } catch (e) {
             console.error(e);
           }
     }
 
-    static clearQueue() {
-        this.queue = [];
+    static async clearQueue() {
+        await Service.remove();
     }
 
-    private static async processQueue(clusters: Cluster[], requests: ServiceRequest[]): Promise<void> {
+
+    private static async processQueue(clusters: Cluster[], requests: IService[]): Promise<void> {
+        //console.log('requests', util.inspect(requests, {showHidden: false, depth: null, colors: true}));
+        //console.log('clusters', util.inspect(clusters, {showHidden: false, depth: null, colors: true}));
         requests.forEach(request => {
-            console.log(util.inspect(request, {showHidden: false, depth: null, colors: true}))
+            const validCommunities = request.requester.cluster.owner.communities;
             let mxScore = 0;
             let mxDevice: Device | undefined;
-            clusters.forEach(cluster => {
+            clusters.filter(cluster =>  Utils.arrayIntersect(cluster.owner.communities, validCommunities)).forEach(cluster => {
                 const result = cluster.getHighestScore();
                 console.log("highest score: ", result.score, " cluster: ", cluster.uuid);
                 if (result.score > mxScore) {
@@ -58,9 +76,7 @@ export default class Scheduler {
                 console.log("assigned to device ", mxDevice.id);
                 mxDevice.assign(request);
             } else {
-                console.log("readded to queue")
-                //if no device is free at the moment add the request back to the queue for next iteration
-                Scheduler.addToQueue(request);
+                console.log("keep in queue");
             }
         });
     }

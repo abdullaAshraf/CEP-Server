@@ -8,6 +8,7 @@ import indexRouter from './routes/index'
 import serviceRouter from './routes/service'
 import clusterRouter from './routes/cluster'
 import userRouter from './routes/auth'
+import communityRouter from './routes/community'
 import Scheduler from './services/scheduler';
 import ClusterManager from './services/clusterManager';
 import mongoose from 'mongoose';
@@ -55,6 +56,8 @@ app.use('/', indexRouter);
 app.use('/service', serviceRouter);
 app.use('/cluster', clusterRouter);
 app.use('/user', userRouter);
+app.use('/community', communityRouter);
+
 
 // catch 404 and forward to error handler
 app.use((req, res, next) => {

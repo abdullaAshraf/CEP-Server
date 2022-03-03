@@ -33,10 +33,11 @@ export default class DataManager {
             DataManager.saveMessage(topic, message);
         });
 
-        // subscribe to topic
+        // subscribe to topic or list of topics
         let topic = process.env.MQTT_TOPIC;
         if(!topic) {
-            topic = 'EdgeXEvents';
+            // subscribe to all
+            topic = '#';
         }
         client.subscribe(topic);
     }
@@ -49,6 +50,7 @@ export default class DataManager {
         {
             DataManager.db = client?.db("Shared");
             console.log('Connected to MongoDB');
+            DataManager.addPending();
         }
         });
     }
@@ -71,7 +73,6 @@ export default class DataManager {
             if (err)
                 console.error(err); 
         });
-        DataManager.addPending();
     }
 
     static addPending() {

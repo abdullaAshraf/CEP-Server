@@ -20,5 +20,12 @@ class ValidationService {
         });
         return schema.validate(data).error;
     }
+    static communityValidation(data) {
+        const schema = joi_1.default.object().keys({
+            name: joi_1.default.string().min(3).max(255).required(),
+            description: joi_1.default.string().max(1024)
+        });
+        return schema.validate(data).error;
+    }
 }
 exports.default = ValidationService;

@@ -1,18 +1,30 @@
 "use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ClusterState = void 0;
-const uuid_1 = require("uuid");
 const Device_1 = __importDefault(require("./Device"));
+const Device_2 = __importDefault(require("../schema/Device"));
+const Cluster_1 = __importDefault(require("../schema/Cluster"));
 class Cluster {
-    constructor() {
+    constructor(uuid, state, devices, lastUpdate, owner) {
         this.state = ClusterState.Inactive;
         this.devices = [];
-        this.uuid = (0, uuid_1.v4)();
-        this.state = ClusterState.Active;
-        this.lastUpdate = new Date();
+        this.uuid = uuid;
+        this.state = state;
+        this.devices = devices;
+        this.lastUpdate = lastUpdate;
+        this.owner = owner;
     }
     getHighestScore() {
         let mxScore = 0;
@@ -64,6 +76,43 @@ class Cluster {
             device.assigned = [];
         });
         return assignments;
+    }
+    save(saveDevice = true) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let promises = [];
+            if (saveDevice) {
+                promises = this.devices.map((device) => __awaiter(this, void 0, void 0, function* () {
+                    if (device._id) {
+                        yield Device_2.default.updateOne({ _id: device._id }, {
+                            benchmarks: device.benchmarks,
+                            services: device.assigned.map(service => service._id)
+                        });
+                    }
+                    else {
+                        const schema = new Device_2.default({
+                            id: device.id,
+                            cluster: this._id,
+                            benchmarks: device.benchmarks,
+                            services: []
+                        });
+                        const savedDevice = yield schema.save();
+                        device._id = savedDevice._id;
+                    }
+                }));
+            }
+            yield Promise.all(promises);
+            yield Cluster_1.default.updateOne({ _id: this._id }, {
+                state: ClusterState[this.state],
+                lastUpdate: Date.now(),
+                devices: this.devices.map(device => device._id)
+            });
+        });
+    }
+    delete() {
+        return __awaiter(this, void 0, void 0, function* () {
+            yield Device_2.default.deleteMany({ _id: [this.devices.map(device => device._id)] });
+            yield Cluster_1.default.deleteOne({ _id: this._id });
+        });
     }
 }
 exports.default = Cluster;

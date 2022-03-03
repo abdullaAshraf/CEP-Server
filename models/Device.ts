@@ -1,16 +1,23 @@
-import ServiceRequest from "./ServiceRequest";
+import { IService, ServiceState } from "../schema/Service";
+import DeviceSchema from "../schema/Device";
 
 export default class Device {
+    _id: string | undefined;
     id: string;
     benchmarks: Benchmark[] = [];
-    assigned: ServiceRequest[] = [];
+    assigned: IService[] = [];
 
     constructor(id: string) {
         this.id = id;
     }
 
-    assign(request: ServiceRequest){
+    async assign(request: IService){
+        request.state = ServiceState[ServiceState.Assigned];
         this.assigned.push(request);
+        request.save();
+        const device = await DeviceSchema.findById(this._id);
+        device.services.push(request._id);
+        device.save();
     }
 
     addBenchmark(benchmark: Benchmark, override: boolean = true) {

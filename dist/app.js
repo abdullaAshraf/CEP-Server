@@ -12,6 +12,7 @@ const index_1 = __importDefault(require("./routes/index"));
 const service_1 = __importDefault(require("./routes/service"));
 const cluster_1 = __importDefault(require("./routes/cluster"));
 const auth_1 = __importDefault(require("./routes/auth"));
+const community_1 = __importDefault(require("./routes/community"));
 const scheduler_1 = __importDefault(require("./services/scheduler"));
 const clusterManager_1 = __importDefault(require("./services/clusterManager"));
 const mongoose_1 = __importDefault(require("mongoose"));
@@ -50,6 +51,7 @@ app.use('/', index_1.default);
 app.use('/service', service_1.default);
 app.use('/cluster', cluster_1.default);
 app.use('/user', auth_1.default);
+app.use('/community', community_1.default);
 // catch 404 and forward to error handler
 app.use((req, res, next) => {
     next((0, http_errors_1.default)(404));

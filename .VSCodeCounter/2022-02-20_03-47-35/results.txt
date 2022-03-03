@@ -1,0 +1,98 @@
+Date : 2022-02-20 03:47:35
+Directory : d:\Masters\Multi-Access Edge Computing\Thesis\Enviornment\Server
+Total : 55 files,  10906 codes, 159 comments, 194 blanks, all 11259 lines
+
+Languages
++--------------------+------------+------------+------------+------------+------------+
+| language           | files      | code       | comment    | blank      | total      |
++--------------------+------------+------------+------------+------------+------------+
+| JSON               |          3 |      8,599 |          0 |          2 |      8,601 |
+| JavaScript         |         24 |      1,267 |         39 |         24 |      1,330 |
+| TypeScript         |         23 |      1,005 |         39 |        152 |      1,196 |
+| Pug                |          3 |         16 |          0 |          5 |         21 |
+| JSON with Comments |          1 |         12 |         81 |          9 |        102 |
+| CSS                |          1 |          7 |          0 |          2 |          9 |
++--------------------+------------+------------+------------+------------+------------+
+
+Directories
++----------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| path                                                                                               | files      | code       | comment    | blank      | total      |
++----------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| .                                                                                                  |         55 |     10,906 |        159 |        194 |     11,259 |
+| dist                                                                                               |         28 |      1,290 |         39 |         31 |      1,360 |
+| dist\models                                                                                        |          4 |        200 |          0 |          4 |        204 |
+| dist\public                                                                                        |          1 |          7 |          0 |          2 |          9 |
+| dist\public\stylesheets                                                                            |          1 |          7 |          0 |          2 |          9 |
+| dist\routes                                                                                        |          6 |        426 |         27 |          6 |        459 |
+| dist\schema                                                                                        |          6 |        191 |          0 |          6 |        197 |
+| dist\services                                                                                      |          5 |        368 |          6 |          5 |        379 |
+| dist\utilities                                                                                     |          2 |         17 |          0 |          2 |         19 |
+| dist\views                                                                                         |          3 |         16 |          0 |          5 |         21 |
+| models                                                                                             |          3 |        158 |          0 |         17 |        175 |
+| routes                                                                                             |          6 |        317 |         27 |         57 |        401 |
+| schema                                                                                             |          6 |        196 |          0 |         17 |        213 |
+| services                                                                                           |          5 |        263 |          6 |         41 |        310 |
+| utilities                                                                                          |          2 |         11 |          0 |          4 |         15 |
++----------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+
+Files
++----------------------------------------------------------------------------------------------------+--------------------+------------+------------+------------+------------+
+| filename                                                                                           | language           | code       | comment    | blank      | total      |
++----------------------------------------------------------------------------------------------------+--------------------+------------+------------+------------+------------+
+| d:\Masters\Multi-Access Edge Computing\Thesis\Enviornment\Server\app.ts                            | TypeScript         |         60 |          6 |         16 |         82 |
+| d:\Masters\Multi-Access Edge Computing\Thesis\Enviornment\Server\dist\app.js                       | JavaScript         |         65 |          6 |          1 |         72 |
+| d:\Masters\Multi-Access Edge Computing\Thesis\Enviornment\Server\dist\models\Benchmark.js          | JavaScript         |          8 |          0 |          1 |          9 |
+| d:\Masters\Multi-Access Edge Computing\Thesis\Enviornment\Server\dist\models\Cluster.js            | JavaScript         |        127 |          0 |          1 |        128 |
+| d:\Masters\Multi-Access Edge Computing\Thesis\Enviornment\Server\dist\models\Device.js             | JavaScript         |         52 |          0 |          1 |         53 |
+| d:\Masters\Multi-Access Edge Computing\Thesis\Enviornment\Server\dist\models\ServiceRequest.js     | JavaScript         |         13 |          0 |          1 |         14 |
+| d:\Masters\Multi-Access Edge Computing\Thesis\Enviornment\Server\dist\public\stylesheets\style.css | CSS                |          7 |          0 |          2 |          9 |
+| d:\Masters\Multi-Access Edge Computing\Thesis\Enviornment\Server\dist\routes\auth.js               | JavaScript         |         75 |          6 |          1 |         82 |
+| d:\Masters\Multi-Access Edge Computing\Thesis\Enviornment\Server\dist\routes\cluster.js            | JavaScript         |         41 |          1 |          1 |         43 |
+| d:\Masters\Multi-Access Edge Computing\Thesis\Enviornment\Server\dist\routes\community.js          | JavaScript         |        148 |         14 |          1 |        163 |
+| d:\Masters\Multi-Access Edge Computing\Thesis\Enviornment\Server\dist\routes\index.js              | JavaScript         |         11 |          1 |          1 |         13 |
+| d:\Masters\Multi-Access Edge Computing\Thesis\Enviornment\Server\dist\routes\service.js            | JavaScript         |        101 |          5 |          1 |        107 |
+| d:\Masters\Multi-Access Edge Computing\Thesis\Enviornment\Server\dist\routes\verify.js             | JavaScript         |         50 |          0 |          1 |         51 |
+| d:\Masters\Multi-Access Edge Computing\Thesis\Enviornment\Server\dist\schema\Cluster.js            | JavaScript         |         30 |          0 |          1 |         31 |
+| d:\Masters\Multi-Access Edge Computing\Thesis\Enviornment\Server\dist\schema\Community.js          | JavaScript         |         28 |          0 |          1 |         29 |
+| d:\Masters\Multi-Access Edge Computing\Thesis\Enviornment\Server\dist\schema\Device.js             | JavaScript         |         35 |          0 |          1 |         36 |
+| d:\Masters\Multi-Access Edge Computing\Thesis\Enviornment\Server\dist\schema\Invitation.js         | JavaScript         |         23 |          0 |          1 |         24 |
+| d:\Masters\Multi-Access Edge Computing\Thesis\Enviornment\Server\dist\schema\Service.js            | JavaScript         |         37 |          0 |          1 |         38 |
+| d:\Masters\Multi-Access Edge Computing\Thesis\Enviornment\Server\dist\schema\User.js               | JavaScript         |         38 |          0 |          1 |         39 |
+| d:\Masters\Multi-Access Edge Computing\Thesis\Enviornment\Server\dist\services\clusterManager.js   | JavaScript         |        113 |          1 |          1 |        115 |
+| d:\Masters\Multi-Access Edge Computing\Thesis\Enviornment\Server\dist\services\dataManager.js      | JavaScript         |         74 |          5 |          1 |         80 |
+| d:\Masters\Multi-Access Edge Computing\Thesis\Enviornment\Server\dist\services\mapper.js           | JavaScript         |         43 |          0 |          1 |         44 |
+| d:\Masters\Multi-Access Edge Computing\Thesis\Enviornment\Server\dist\services\scheduler.js        | JavaScript         |        107 |          0 |          1 |        108 |
+| d:\Masters\Multi-Access Edge Computing\Thesis\Enviornment\Server\dist\services\validation.js       | JavaScript         |         31 |          0 |          1 |         32 |
+| d:\Masters\Multi-Access Edge Computing\Thesis\Enviornment\Server\dist\utilities\Utils.js           | JavaScript         |          8 |          0 |          1 |          9 |
+| d:\Masters\Multi-Access Edge Computing\Thesis\Enviornment\Server\dist\utilities\dateUtils.js       | JavaScript         |          9 |          0 |          1 |         10 |
+| d:\Masters\Multi-Access Edge Computing\Thesis\Enviornment\Server\dist\views\error.pug              | Pug                |          5 |          0 |          2 |          7 |
+| d:\Masters\Multi-Access Edge Computing\Thesis\Enviornment\Server\dist\views\index.pug              | Pug                |          4 |          0 |          2 |          6 |
+| d:\Masters\Multi-Access Edge Computing\Thesis\Enviornment\Server\dist\views\layout.pug             | Pug                |          7 |          0 |          1 |          8 |
+| d:\Masters\Multi-Access Edge Computing\Thesis\Enviornment\Server\models\Benchmark.ts               | TypeScript         |         10 |          0 |          1 |         11 |
+| d:\Masters\Multi-Access Edge Computing\Thesis\Enviornment\Server\models\Cluster.ts                 | TypeScript         |        112 |          0 |         10 |        122 |
+| d:\Masters\Multi-Access Edge Computing\Thesis\Enviornment\Server\models\Device.ts                  | TypeScript         |         36 |          0 |          6 |         42 |
+| d:\Masters\Multi-Access Edge Computing\Thesis\Enviornment\Server\package-lock.json                 | JSON               |      8,537 |          0 |          1 |      8,538 |
+| d:\Masters\Multi-Access Edge Computing\Thesis\Enviornment\Server\package.json                      | JSON               |         50 |          0 |          1 |         51 |
+| d:\Masters\Multi-Access Edge Computing\Thesis\Enviornment\Server\routes\auth.ts                    | TypeScript         |         60 |          6 |         15 |         81 |
+| d:\Masters\Multi-Access Edge Computing\Thesis\Enviornment\Server\routes\cluster.ts                 | TypeScript         |         26 |          1 |          6 |         33 |
+| d:\Masters\Multi-Access Edge Computing\Thesis\Enviornment\Server\routes\community.ts               | TypeScript         |        130 |         14 |         18 |        162 |
+| d:\Masters\Multi-Access Edge Computing\Thesis\Enviornment\Server\routes\index.ts                   | TypeScript         |          6 |          1 |          3 |         10 |
+| d:\Masters\Multi-Access Edge Computing\Thesis\Enviornment\Server\routes\service.ts                 | TypeScript         |         65 |          5 |          9 |         79 |
+| d:\Masters\Multi-Access Edge Computing\Thesis\Enviornment\Server\routes\verify.ts                  | TypeScript         |         30 |          0 |          6 |         36 |
+| d:\Masters\Multi-Access Edge Computing\Thesis\Enviornment\Server\schema\Cluster.ts                 | TypeScript         |         35 |          0 |          3 |         38 |
+| d:\Masters\Multi-Access Edge Computing\Thesis\Enviornment\Server\schema\Community.ts               | TypeScript         |         23 |          0 |          2 |         25 |
+| d:\Masters\Multi-Access Edge Computing\Thesis\Enviornment\Server\schema\Device.ts                  | TypeScript         |         39 |          0 |          3 |         42 |
+| d:\Masters\Multi-Access Edge Computing\Thesis\Enviornment\Server\schema\Invitation.ts              | TypeScript         |         18 |          0 |          2 |         20 |
+| d:\Masters\Multi-Access Edge Computing\Thesis\Enviornment\Server\schema\Service.ts                 | TypeScript         |         39 |          0 |          4 |         43 |
+| d:\Masters\Multi-Access Edge Computing\Thesis\Enviornment\Server\schema\User.ts                    | TypeScript         |         42 |          0 |          3 |         45 |
+| d:\Masters\Multi-Access Edge Computing\Thesis\Enviornment\Server\services\clusterManager.ts        | TypeScript         |         84 |          1 |          9 |         94 |
+| d:\Masters\Multi-Access Edge Computing\Thesis\Enviornment\Server\services\dataManager.ts           | TypeScript         |         69 |          5 |         12 |         86 |
+| d:\Masters\Multi-Access Edge Computing\Thesis\Enviornment\Server\services\mapper.ts                | TypeScript         |         20 |          0 |          2 |         22 |
+| d:\Masters\Multi-Access Edge Computing\Thesis\Enviornment\Server\services\scheduler.ts             | TypeScript         |         65 |          0 |          9 |         74 |
+| d:\Masters\Multi-Access Edge Computing\Thesis\Enviornment\Server\services\validation.ts            | TypeScript         |         25 |          0 |          9 |         34 |
+| d:\Masters\Multi-Access Edge Computing\Thesis\Enviornment\Server\tsconfig.json                     | JSON with Comments |         12 |         81 |          9 |        102 |
+| d:\Masters\Multi-Access Edge Computing\Thesis\Enviornment\Server\tslint.json                       | JSON               |         12 |          0 |          0 |         12 |
+| d:\Masters\Multi-Access Edge Computing\Thesis\Enviornment\Server\utilities\Utils.ts                | TypeScript         |          5 |          0 |          2 |          7 |
+| d:\Masters\Multi-Access Edge Computing\Thesis\Enviornment\Server\utilities\dateUtils.ts            | TypeScript         |          6 |          0 |          2 |          8 |
+| Total                                                                                              |                    |     10,906 |        159 |        194 |     11,259 |
++----------------------------------------------------------------------------------------------------+--------------------+------------+------------+------------+------------+

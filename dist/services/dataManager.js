@@ -28,10 +28,11 @@ class DataManager {
             //Called each time a message is received
             DataManager.saveMessage(topic, message);
         });
-        // subscribe to topic
+        // subscribe to topic or list of topics
         let topic = process.env.MQTT_TOPIC;
         if (!topic) {
-            topic = 'EdgeXEvents';
+            // subscribe to all
+            topic = '#';
         }
         client.subscribe(topic);
     }
@@ -42,6 +43,7 @@ class DataManager {
             else {
                 DataManager.db = client === null || client === void 0 ? void 0 : client.db("Shared");
                 console.log('Connected to MongoDB');
+                DataManager.addPending();
             }
         });
     }
@@ -64,7 +66,6 @@ class DataManager {
             if (err)
                 console.error(err);
         });
-        DataManager.addPending();
     }
     static addPending() {
         while (DataManager.pending.length > 0) {

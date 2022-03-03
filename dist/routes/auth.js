@@ -20,6 +20,7 @@ const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const verify_1 = require("./verify");
 const uuid_1 = require("uuid");
 const router = express_1.default.Router();
+// Register new user
 router.get('/register', (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const error = validation_1.default.userRegisterValidation(req.body);
     if (error) {
@@ -48,6 +49,7 @@ router.get('/register', (req, res, next) => __awaiter(void 0, void 0, void 0, fu
         res.status(400).send(err);
     }
 }));
+// Login user using username and password
 router.get('/login', (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const error = validation_1.default.userLoginValidation(req.body);
     if (error) {
@@ -70,6 +72,7 @@ router.get('/login', (req, res, next) => __awaiter(void 0, void 0, void 0, funct
     const token = jsonwebtoken_1.default.sign({ _id: user._id }, process.env.SECRET);
     res.header('auth-token', token).send(token);
 }));
+// Get API Key
 router.get('/key', verify_1.token, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     console.log(req.user);
     const user = yield User_1.default.findById(req.user);

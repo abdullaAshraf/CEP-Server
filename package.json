@@ -5,6 +5,7 @@
   "main": "dist/app.js",
   "scripts": {
     "build": "tsc --project ./",
+    "prestart": "npm run build",
     "start": "node .",
     "test": "echo \"Error: no test specified\" && exit 1",
     "watch-and-run": "start /B tsc -w & nodemon -q -w dist dist/app.js"

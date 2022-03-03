@@ -4,35 +4,28 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = __importDefault(require("mongoose"));
-const userSchema = new mongoose_1.default.Schema({
-    name: {
+const clusterSchema = new mongoose_1.default.Schema({
+    uuid: {
         type: String,
         required: true,
-        min: 6,
-        max: 255
     },
-    email: {
+    state: {
         type: String,
-        required: true,
-        min: 6,
-        max: 255
+        enum: ['Active', 'Busy', 'Inactive'],
+        default: 'Active'
     },
-    password: {
-        type: String,
+    owner: {
+        type: mongoose_1.default.Schema.Types.ObjectId,
+        ref: 'User',
         required: true,
-        min: 6,
-        max: 1024
     },
-    date: {
+    lastUpdate: {
         type: Date,
         default: Date.now
     },
-    key: {
-        type: String
-    },
-    communities: [{
+    devices: [{
             type: mongoose_1.default.Schema.Types.ObjectId,
-            ref: 'Community',
+            ref: 'Device',
         }]
 });
-exports.default = mongoose_1.default.model('User', userSchema);
+exports.default = mongoose_1.default.model('Cluster', clusterSchema);
