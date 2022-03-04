@@ -3,6 +3,7 @@ import DeviceSchema from '../schema/Device'
 import ClusterSchema from '../schema/Cluster'
 import { IService } from '../schema/Service';
 import { IUser } from '../schema/User';
+import cluster from 'cluster';
 
 export default class Cluster {
     _id: string | undefined;
@@ -74,6 +75,21 @@ export default class Cluster {
             device.assigned = [];
         });
         return assignments;
+    }
+
+    async revokeAssignment(uuid: string): Promise<boolean> {
+        for(const device of this.devices) {
+            const service = device.assigned.find(request => request.uuid === uuid);
+            if (service) {
+                await DeviceSchema.updateOne({_id: device._id}, {
+                    $pullAll: {
+                        services: [{_id: service._id}],
+                    },
+                  });
+                return true;
+            }
+        }
+        return false;
     }
 
     async save(saveDevice: boolean = true) {

@@ -33,14 +33,11 @@ router.put('/finished', key, async (req, res, next) => {
     res.status(400);
     return res.end(JSON.stringify('No cluster was found with this uuid, use register endpoint to get a valid uuid.'));
   } else {
-    const device = cluster.getOrCreateDevice(req.body.deviceId);
-    const serviceIndex = device.assigned.findIndex(request => request.uuid === req.body.uuid);
-    if (serviceIndex === -1) {
+    const found = await cluster.revokeAssignment(req.body.uuid);
+    if (!found) {
       res.status(400);
-      return res.end(JSON.stringify('There is no service with this uuid assigned to this device.'));
+      return res.end(JSON.stringify('There is no service with this uuid assigned to this cluster.'));
     }
-    device.assigned.splice(serviceIndex, 1);
-    await cluster.save();
     await NotificationManager.notify(req.body.uuid);
     res.setHeader('Content-Type', 'application/json');
     res.end(JSON.stringify('success'));

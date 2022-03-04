@@ -77,6 +77,22 @@ class Cluster {
         });
         return assignments;
     }
+    revokeAssignment(uuid) {
+        return __awaiter(this, void 0, void 0, function* () {
+            for (const device of this.devices) {
+                const service = device.assigned.find(request => request.uuid === uuid);
+                if (service) {
+                    yield Device_2.default.updateOne({ _id: device._id }, {
+                        $pullAll: {
+                            services: [{ _id: service._id }],
+                        },
+                    });
+                    return true;
+                }
+            }
+            return false;
+        });
+    }
     save(saveDevice = true) {
         return __awaiter(this, void 0, void 0, function* () {
             let promises = [];
