@@ -36,6 +36,7 @@ class Mapper {
         const device = new Device_1.default(data.id);
         device.benchmarks = data.benchmarks;
         device.assigned = data.services;
+        device.notifications = data.notifications;
         device._id = data._id;
         return device;
     }

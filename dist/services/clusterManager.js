@@ -51,7 +51,7 @@ class ClusterManager {
             const clusters = yield Cluster_2.default.find().populate('owner').populate({
                 path: 'devices',
                 populate: {
-                    path: 'services'
+                    path: 'services notifications'
                 }
             });
             return clusters.map(cluster => mapper_1.default.toCluster(cluster));
@@ -68,7 +68,7 @@ class ClusterManager {
             const cluster = yield Cluster_2.default.findOne({ uuid: uuid }).populate('owner').populate({
                 path: 'devices',
                 populate: {
-                    path: 'services'
+                    path: 'services notifications'
                 }
             });
             return mapper_1.default.toCluster(cluster);

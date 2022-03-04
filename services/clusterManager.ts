@@ -1,5 +1,4 @@
 import Cluster, { ClusterState } from "../models/Cluster";
-import Scheduler from './scheduler';
 import { CronJob } from 'cron';
 import DateUtils from "../utilities/dateUtils";
 import ClusterSchema from '../schema/Cluster';
@@ -47,7 +46,7 @@ export default class ClusterManager {
         const clusters = await ClusterSchema.find().populate('owner').populate({
             path: 'devices',
             populate: {
-                path: 'services'
+                path: 'services notifications'
             }});
         return clusters.map(cluster => Mapper.toCluster(cluster));
     }
@@ -61,9 +60,9 @@ export default class ClusterManager {
         const cluster = await ClusterSchema.findOne({uuid: uuid}).populate('owner').populate({
             path: 'devices',
             populate: {
-                path: 'services'
+                path: 'services notifications'
             }});
-        return  Mapper.toCluster(cluster);
+        return Mapper.toCluster(cluster);
     }
 
     static async revokeAllAssignedServices() {

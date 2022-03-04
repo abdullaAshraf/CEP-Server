@@ -83,13 +83,15 @@ export default class Cluster {
                 if (device._id) {
                     await DeviceSchema.updateOne({_id: device._id}, {
                         benchmarks: device.benchmarks,
-                        services: device.assigned.map(service => service._id)
+                        services: device.assigned.map(service => service._id),
+                        notifications: device.notifications.map(service => service._id)
                     });
                 } else {
                     const schema = new DeviceSchema({
                         id: device.id,
                         cluster: this._id,
                         benchmarks: device.benchmarks,
+                        notifications: device.notifications,
                         services: []
                     });
                     const savedDevice = await schema.save();

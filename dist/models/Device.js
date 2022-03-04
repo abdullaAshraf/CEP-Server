@@ -18,6 +18,7 @@ class Device {
     constructor(id) {
         this.benchmarks = [];
         this.assigned = [];
+        this.notifications = [];
         this.id = id;
     }
     assign(request) {

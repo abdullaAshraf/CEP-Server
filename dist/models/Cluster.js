@@ -85,7 +85,8 @@ class Cluster {
                     if (device._id) {
                         yield Device_2.default.updateOne({ _id: device._id }, {
                             benchmarks: device.benchmarks,
-                            services: device.assigned.map(service => service._id)
+                            services: device.assigned.map(service => service._id),
+                            notifications: device.notifications.map(service => service._id)
                         });
                     }
                     else {
@@ -93,6 +94,7 @@ class Cluster {
                             id: device.id,
                             cluster: this._id,
                             benchmarks: device.benchmarks,
+                            notifications: device.notifications,
                             services: []
                         });
                         const savedDevice = yield schema.save();

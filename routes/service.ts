@@ -3,6 +3,7 @@ import ClusterManager from '../services/clusterManager';
 import Scheduler from '../services/scheduler';
 import {key} from './verify';
 import Service, { ServiceState } from '../schema/Service';
+import NotificationManager from '../services/notificationManager';
 
 const router = express.Router();
 
@@ -39,13 +40,8 @@ router.put('/finished', key, async (req, res, next) => {
       return res.end(JSON.stringify('There is no service with this uuid assigned to this device.'));
     }
     device.assigned.splice(serviceIndex, 1);
-    // TODO: send notification to the original requester with finished state
     await cluster.save();
-    const service = await Service.findOne({uuid: req.body.uuid});
-    //TODO: check if failed
-    service.state = ServiceState[ServiceState.Done];
-    await service.save();
-    
+    await NotificationManager.notify(req.body.uuid);
     res.setHeader('Content-Type', 'application/json');
     res.end(JSON.stringify('success'));
   }
@@ -60,8 +56,10 @@ router.get('/', key, async (req, res, next) => {
     res.end(JSON.stringify('No cluster was found with this uuid, use register endpoint to get a valid uuid'));
   } else {
     const response = {
-      services: cluster.getAssignments()
+      services: cluster.getAssignments(),
+      notifications: NotificationManager.getNotifications(cluster)
     }
+    await cluster.save();
     res.end(JSON.stringify(response));
   }
 });

@@ -30,6 +30,10 @@ const deviceSchema = new mongoose_1.default.Schema({
     services: [{
             type: mongoose_1.default.Schema.Types.ObjectId,
             ref: 'Service',
+        }],
+    notifications: [{
+            type: mongoose_1.default.Schema.Types.ObjectId,
+            ref: 'Service',
         }]
 });
 exports.default = mongoose_1.default.model('Device', deviceSchema);

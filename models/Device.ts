@@ -6,6 +6,7 @@ export default class Device {
     id: string;
     benchmarks: Benchmark[] = [];
     assigned: IService[] = [];
+    notifications: IService[] = [];
 
     constructor(id: string) {
         this.id = id;

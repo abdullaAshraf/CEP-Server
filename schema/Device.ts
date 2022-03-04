@@ -7,6 +7,7 @@ export interface IDevice extends mongoose.Document  {
     id: string;
     benchmarks: Benchmark[];
     services: IService[];
+    notifications: IService[];
     cluster: ICluster;
 }
 
@@ -34,6 +35,10 @@ const deviceSchema = new mongoose.Schema({
         }
     }],
     services: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Service',
+    }],
+    notifications: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Service',
     }]

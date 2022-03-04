@@ -1,23 +1,4 @@
 "use strict";
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -35,7 +16,7 @@ const express_1 = __importDefault(require("express"));
 const clusterManager_1 = __importDefault(require("../services/clusterManager"));
 const scheduler_1 = __importDefault(require("../services/scheduler"));
 const verify_1 = require("./verify");
-const Service_1 = __importStar(require("../schema/Service"));
+const notificationManager_1 = __importDefault(require("../services/notificationManager"));
 const router = express_1.default.Router();
 // TODO: define DTOs for request body
 // Request Service
@@ -71,12 +52,8 @@ router.put('/finished', verify_1.key, (req, res, next) => __awaiter(void 0, void
             return res.end(JSON.stringify('There is no service with this uuid assigned to this device.'));
         }
         device.assigned.splice(serviceIndex, 1);
-        // TODO: send notification to the original requester with finished state
         yield cluster.save();
-        const service = yield Service_1.default.findOne({ uuid: req.body.uuid });
-        //TODO: check if failed
-        service.state = Service_1.ServiceState[Service_1.ServiceState.Done];
-        yield service.save();
+        yield notificationManager_1.default.notify(req.body.uuid);
         res.setHeader('Content-Type', 'application/json');
         res.end(JSON.stringify('success'));
     }
@@ -91,8 +68,10 @@ router.get('/', verify_1.key, (req, res, next) => __awaiter(void 0, void 0, void
     }
     else {
         const response = {
-            services: cluster.getAssignments()
+            services: cluster.getAssignments(),
+            notifications: notificationManager_1.default.getNotifications(cluster)
         };
+        yield cluster.save();
         res.end(JSON.stringify(response));
     }
 }));
