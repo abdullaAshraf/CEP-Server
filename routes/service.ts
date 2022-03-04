@@ -16,7 +16,7 @@ router.post('/', key, async (req, res, next) => {
     res.end(JSON.stringify('No cluster was found with this uuid, use register endpoint to get a valid uuid.'));
   } else {
     const device = cluster.getOrCreateDevice(req.body.deviceId);
-    await cluster.save();
+    await cluster.save(true, false);
     const uuid = await Scheduler.addToQueue(req.body.name, req.body.command, device);
     res.setHeader('Content-Type', 'application/json');
     const response = {
@@ -56,7 +56,7 @@ router.get('/', key, async (req, res, next) => {
       services: cluster.getAssignments(),
       notifications: NotificationManager.getNotifications(cluster)
     }
-    await cluster.save();
+    await cluster.save(true, true);
     res.end(JSON.stringify(response));
   }
 });

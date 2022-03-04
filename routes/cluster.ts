@@ -25,7 +25,7 @@ router.post('/benchmark', key, async (req, res, next) => {
     res.end(JSON.stringify('No cluster was found with this uuid, use register endpoint to get a valid uuid'));
   } else {
     cluster.updateBenchmarks(req.body.benchmarks);
-    await cluster.save();
+    await cluster.save(true, true);
     res.end(JSON.stringify("Success"));
   }
 });

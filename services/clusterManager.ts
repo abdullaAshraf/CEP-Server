@@ -69,7 +69,7 @@ export default class ClusterManager {
         const clusters = await ClusterManager.getAllClusters();
         clusters.forEach(cluster => {
             cluster.revokeAssignments();
-            cluster.save();
+            cluster.save(true, false);
         });
     }
 
@@ -79,10 +79,6 @@ export default class ClusterManager {
             const minsDiff = DateUtils.minutesBetween(cluster.lastUpdate, new Date());
             if (minsDiff >= this.deleteAfter) {
                 cluster.delete();
-                const index = clusters.indexOf(cluster);
-                if (index > -1) {
-                    clusters.splice(index, 1);
-                }
             } else if (minsDiff >= this.inactiveAfter) {
                 cluster.state = ClusterState.Inactive;
                 const requests = cluster.revokeAssignments();
@@ -90,13 +86,13 @@ export default class ClusterManager {
                     request.state = ServiceState[ServiceState.Queue];
                     request.save();
                 });
-                cluster.save(false);
+                cluster.save(true, false);
             } else if (minsDiff >= this.busyAfter) {
                 cluster.state = ClusterState.Busy;
-                cluster.save(false);
+                cluster.save(false, false);
             } else {
                 cluster.state = ClusterState.Active;
-                cluster.save(false);
+                cluster.save(false, false);
             }
         });
     }

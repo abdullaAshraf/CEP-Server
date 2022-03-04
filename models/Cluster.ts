@@ -92,7 +92,7 @@ export default class Cluster {
         return false;
     }
 
-    async save(saveDevice: boolean = true) {
+    async save(saveDevice: boolean = true, updateDate: boolean = false) {
         let promises: Promise<any>[] = []; 
         if (saveDevice) {
             promises = this.devices.map( async device => {
@@ -118,7 +118,7 @@ export default class Cluster {
         await Promise.all(promises);
         await ClusterSchema.updateOne({_id: this._id}, {
             state: ClusterState[this.state],
-            lastUpdate: Date.now(),
+            lastUpdate: updateDate ? this.lastUpdate : Date.now(),
             devices: this.devices.map(device => device._id)
         });
     }
