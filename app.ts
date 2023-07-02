@@ -78,5 +78,3 @@ app.use((err: { message: any; status: any; }, req: { app: { get: (arg0: string) 
 app.listen(port, () => {
   return console.log(`Express is listening at http://localhost:${port}`);
 });
-
-//mongoose.connect("mongodb://localhost:27017/acmedb")
